@@ -6,9 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.turkcell.core.ui.theme.TicketAppTheme
-import com.turkcell.ticketapp.login.LoginScreen // LoginScreen'in olduğu paketi import ediyoruz
+import com.turkcell.ticketapp.login.LoginScreen
+import com.turkcell.ticketapp.register.RegisterScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,14 +18,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicketAppTheme {
+
+                var currentScreen by remember { mutableStateOf("login") }
+
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    // Burası artık giriş ekranını açacak
-                    LoginScreen(
-                        onNavigateToHome = {
-                            // Giriş başarılı olduktan sonra gidilecek ekran buraya yazılır
-                            println("Giriş yapıldı, ana sayfaya yönlendiriliyor...")
+                    when (currentScreen) {
+                        "login" -> {
+                            LoginScreen(
+                                onNavigateToHome = {
+                                    println("Giriş yapıldı, ana sayfaya yönlendiriliyor...")
+                                }
+                            )
+
                         }
-                    )
+
+                        "register" -> {
+                            RegisterScreen(
+                                onRegisterSuccess = {
+
+                                    currentScreen = "login"
+                                },
+                                onNavigateToLogin = {
+
+                                    currentScreen = "login"
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
