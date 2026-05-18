@@ -1,6 +1,5 @@
 package com.turkcell.ticketapp.login
 
-
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,7 +21,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     val gradient = Brush.verticalGradient(listOf(Color(0xFF1B5E20), Color(0xFF000000)))
 
@@ -43,7 +43,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // E-posta Alanı
+
             OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.email = it },
@@ -57,7 +57,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Şifre Alanı
+
             OutlinedTextField(
                 value = viewModel.password,
                 onValueChange = { viewModel.password = it },
@@ -68,6 +68,7 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.height(32.dp))
+
 
             Button(
                 onClick = { viewModel.onLoginClick(onNavigateToHome) },
@@ -80,6 +81,17 @@ fun LoginScreen(
                 } else {
                     Text("Giriş Yap", fontSize = 18.sp)
                 }
+            }
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(onClick = onNavigateToRegister) {
+                Text(
+                    text = "Hesabın yok mu? Kayıt Ol",
+                    color = Color(0xFFA5D6A7),
+                    fontSize = 14.sp
+                )
             }
         }
     }

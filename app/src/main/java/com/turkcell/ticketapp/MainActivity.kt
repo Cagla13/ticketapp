@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicketAppTheme {
-
+                // Ekran geçişlerini yöneten durum değişkeni
                 var currentScreen by remember { mutableStateOf("login") }
 
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -27,9 +27,12 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(
                                 onNavigateToHome = {
                                     println("Giriş yapıldı, ana sayfaya yönlendiriliyor...")
+                                },
+
+                                onNavigateToRegister = {
+                                    currentScreen = "register"
                                 }
                             )
-
                         }
 
                         "register" -> {
