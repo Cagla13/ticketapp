@@ -6,12 +6,15 @@ import com.turkcell.core.domain.User
 import com.turkcell.core.domain.UserRole
 import com.turkcell.data.dto.CredentialsDto
 import com.turkcell.data.remote.AuthApi
+import com.turkcell.data.util.TokenStore // TokenStore'u import ettik
 import com.turkcell.data.util.runCatchingApi
 import kotlinx.coroutines.flow.Flow
 
 class AuthRepositoryImpl(
-    private val authApi: AuthApi
+    private val authApi: AuthApi,
+    private val tokenStore: TokenStore // Yapıcıya (constructor) ekledik
 ) : AuthRepository {
+
     override val isLoggedIn: Flow<Boolean>
         get() = TODO("Not yet implemented")
 
@@ -19,19 +22,22 @@ class AuthRepositoryImpl(
         email: String,
         password: String
     ): Result<AuthSession> = runCatchingApi {
-        authApi.login(CredentialsDto(email=email, password=password))
-    }.onSuccess {
-        // jwt'i bi yere yaz..
-    }
-        .map {
-                i -> AuthSession(
+        authApi.login(CredentialsDto(email = email, password = password))
+    }.onSuccess { tokenPair ->
+        // İşte JWT'leri tam burada güvenli bir şekilde kaydediyoruz:
+        tokenStore.saveTokens(
+            accessToken = tokenPair.accessToken,
+            refreshToken = tokenPair.refreshToken
+        )
+    }.map { i ->
+        AuthSession(
             user = User(
-                i.user.id, i.user.email, UserRole.fromApi(i.user.role),
+                i.user.id, i.user.email, UserRole.fromApi(i.user.role)
             ),
             accessToken = i.accessToken,
-            refreshToken = i.refreshToken)
-        }
-
+            refreshToken = i.refreshToken
+        )
+    }
 
     override suspend fun register(
         email: String,

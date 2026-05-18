@@ -4,10 +4,13 @@ import com.turkcell.ticketapp.login.LoginViewModel
 import com.turkcell.ticketapp.register.RegisterViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import com.turkcell.ticketapp.home.HomeViewModel
 
 val viewModelModule = module {
 
     viewModel { LoginViewModel(get()) }
 
     viewModel { RegisterViewModel(get()) }
+
+    viewModel { HomeViewModel(get()) }
 }

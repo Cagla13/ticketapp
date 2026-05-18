@@ -12,18 +12,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import com.turkcell.data.remote.EventApi
 
 val networkModule = module {
     single { Json { ignoreUnknownKeys = true; isLenient = true } }
 
-    // Cihazda saklama aracı (Context'i Koin kendi bulur)
     single { TokenStore(get()) }
-
     single { AuthInterceptor(get()) }
-
     single { TokenAuthenticator(get(), authApiProvider = { get<AuthApi>() }) }
 
-    // OkHttpClient'ı Interceptor ve Authenticator ile besliyoruz
     single {
         OkHttpClient.Builder()
             .addInterceptor(get<AuthInterceptor>())
@@ -33,15 +30,19 @@ val networkModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://api.senin-urlin.com/") // Buraya gerçek Swagger / API URL'ini yazacağız
-            .client(get<OkHttpClient>()) // OkHttpClient bağlandı
+            .baseUrl("https://tickets-api.halitkalayci.com/") // Gerçek Swagger URL'i yazıldı
+            .client(get<OkHttpClient>())
             .addConverterFactory(get<Json>().asConverterFactory("application/json".toMediaType()))
             .build()
     }
 
     single { get<Retrofit>().create(AuthApi::class.java) }
+
+    // YENİ EKLEDİĞİMİZ SATIR: EventApi'yi Koin'e tanıtıyoruz
+    single { get<Retrofit>().create(EventApi::class.java) }
 }
 
 val repositoryModule = module {
-    single<AuthRepository> { AuthRepositoryImpl(get()) }
+    // Koin sırasıyla get() kullanarak hem AuthApi'yi hem de TokenStore'u içeriye enjekte eder.
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
 }

@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import com.turkcell.core.ui.theme.TicketAppTheme
 import com.turkcell.ticketapp.login.LoginScreen
 import com.turkcell.ticketapp.register.RegisterScreen
+import com.turkcell.ticketapp.home.HomeScreen
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +20,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicketAppTheme {
-                // Ekran geçişlerini yöneten durum değişkeni
                 var currentScreen by remember { mutableStateOf("login") }
 
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -26,9 +27,8 @@ class MainActivity : ComponentActivity() {
                         "login" -> {
                             LoginScreen(
                                 onNavigateToHome = {
-                                    println("Giriş yapıldı, ana sayfaya yönlendiriliyor...")
+                                    currentScreen = "home" // Giriş başarılıysa home'a git
                                 },
-
                                 onNavigateToRegister = {
                                     currentScreen = "register"
                                 }
@@ -38,14 +38,17 @@ class MainActivity : ComponentActivity() {
                         "register" -> {
                             RegisterScreen(
                                 onRegisterSuccess = {
-
                                     currentScreen = "login"
                                 },
                                 onNavigateToLogin = {
-
                                     currentScreen = "login"
                                 }
                             )
+                        }
+
+                        "home" -> {
+                            // Home ekranını ViewModel ile birlikte çağırıyoruz
+                            HomeScreen(viewModel = koinViewModel())
                         }
                     }
                 }
